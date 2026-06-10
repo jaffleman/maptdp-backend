@@ -1,0 +1,68 @@
+require("dotenv").config();
+
+const express = require("express");
+const sequelize = require("./app/sequelize");
+const router = require("./app/router");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+
+const app = express();
+
+const PORT = process.env.PORT || 3000;
+
+(async function () {
+  try {
+    console.log("Try to connect the database.\nPlease wait...");
+
+    await sequelize.authenticate();
+
+    console.log(
+      "Connection has been established successfully:",
+      sequelize.options.host
+    );
+
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.json());
+
+    app.use(cors());
+
+    app.options("*", cors());
+
+    // LOG SIMPLE
+    app.use((req, res, next) => {
+      console.log(`${req.method} ${req.url}`);
+      next();
+    });
+
+    // HEALTHCHECKS
+    app.get("/healthz", (req, res) => {
+      res.status(200).json({ status: "ok" });
+    });
+
+    app.get("/searchRep/healthz", (req, res) => {
+      res.status(200).json({ status: "ok" });
+    });
+
+    // TEST ROUTE
+    app.get("/", (req, res) => {
+      res.status(200).json({ message: "API OK" });
+    });
+
+    app.use(router);
+
+    app.use((err, req, res, next) => {
+      console.error(err);
+
+      return res.status(500).json({
+        error: true,
+        message: err.message,
+      });
+    });
+
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Listening on http://0.0.0.0:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Unable to connect to the database.\n", error);
+  }
+})();

@@ -1,0 +1,16 @@
+[
+    {
+        "_id":"5fd514a76d77da1fd0354141",
+        "rep":"cho94",
+        "salle":1,
+        "rco":1,
+        "ferme":3,
+        "level":7,
+        "option":"I",
+        "cd":94,
+        "regletteType":"L/INX",
+        "regletteNbr":"30",
+        "__v":0,
+        "tdpId":"cho94L/INX30"
+    }
+]

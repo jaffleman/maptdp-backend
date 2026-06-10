@@ -1,0 +1,26 @@
+{
+  "name": "finalbackmaptdp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+
+"scripts": {
+  "test": "echo \"No tests yet\" && exit 0",
+  "dev": "nodemon -r dotenv/config index.js --trace-warnings"
+},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.2",
+    "cors": "^2.8.6",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "morgan": "^1.10.0",
+    "pg": "^8.7.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.17.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
