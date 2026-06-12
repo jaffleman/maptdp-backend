@@ -77,7 +77,7 @@ spec:
     - to:
       - namespaceSelector:
           matchLabels:
-            kubernetes.io/metadata.name: maptdp
+            kubernetes.io/metadata.name: {{ .Release.Namespace }}
         podSelector:
           matchLabels:
             app.kubernetes.io/name: maptdp-db
