@@ -41,7 +41,7 @@ spec:
           
             # ✅ valeurs sensibles (Vault)
             - name: DB_HOST
-              value: "maptdp-db-maptdp-db"
+              value: "maptdp-db"
           
             - name: DB_PORT
               value: "5432"
