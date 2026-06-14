@@ -1,11 +1,11 @@
-name: Build & Push Backend Image (Docker Hub)
+name: Build & Push Backend Image
 
 on:
   push:
-    branches: [ "dev", "staging", "main" ]
+    branches: ["dev", "staging", "main"]
 
   pull_request:
-    branches: [ "dev", "staging", "main" ]
+    branches: ["dev", "staging", "main"]
 
 permissions:
   contents: read
@@ -42,11 +42,11 @@ jobs:
       - name: Install dependencies and run tests
         run: |
           npm ci
-          npm test --if-present || echo "Skipping tests"
+          npm test --if-present
 
-      # ------------------------ NPM AUDIT ------------------------
+      # ------------------------ SECURITY AUDIT ------------------------
       - name: Audit npm dependencies
-        run: npm audit --audit-level=high || true
+        run: npm audit --audit-level=high
 
       # ------------------------ DOCKERFILE LINT ------------------------
       - name: Lint Dockerfile
@@ -63,23 +63,18 @@ jobs:
 
       # ------------------------ LOGIN DOCKER HUB ------------------------
       - name: Login Docker Hub
-        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # ------------------------ DOCKER METADATA ------------------------
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=sha
-            type=ref,event=branch
-            type=raw,value=latest,enable={{is_default_branch}}
+      # ------------------------ GENERATE TAG ------------------------
+      - name: Generate image tag
+        id: tag
+        run: |
+          SHORT_SHA=${GITHUB_SHA::7}
+          TAG="sha-${SHORT_SHA}"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       # ------------------------ BUILD LOCAL IMAGE ------------------------
       - name: Build Docker image (local for scan)
@@ -112,6 +107,6 @@ jobs:
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
