@@ -73,7 +73,22 @@ jobs:
         id: tag
         run: |
           SHORT_SHA=${GITHUB_SHA::7}
-          TAG="sha-${SHORT_SHA}"
+          BRANCH=${GITHUB_REF_NAME}
+      
+          if [ "$BRANCH" = "dev" ]; then
+            PREFIX="dev"
+          elif [ "$BRANCH" = "staging" ]; then
+            PREFIX="staging"
+          elif [ "$BRANCH" = "main" ]; then
+            PREFIX="prod"
+          else
+            echo "Branch not supported: $BRANCH"
+            exit 1
+          fi
+      
+          TAG="${PREFIX}-sha-${SHORT_SHA}"
+      
+          echo "Generated tag: $TAG"
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       # ------------------------ BUILD LOCAL IMAGE ------------------------
