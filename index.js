@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 (async function () {
   try {
     console.log("Try to connect the database.\nPlease wait...");
-
+    console.log("I hope we can found it!");
     await sequelize.authenticate();
 
     console.log(
@@ -36,10 +36,6 @@ const PORT = process.env.PORT || 3000;
 
     // HEALTHCHECKS
     app.get("/healthz", (req, res) => {
-      res.status(200).json({ status: "ok" });
-    });
-
-    app.get("/searchRep/healthz", (req, res) => {
       res.status(200).json({ status: "ok" });
     });
 
