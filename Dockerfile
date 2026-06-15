@@ -29,5 +29,4 @@ COPY --chown=nonroot:nonroot --from=builder /app/app /app/app
 
 EXPOSE 80
 USER nonroot
-
 CMD ["index.js"]
