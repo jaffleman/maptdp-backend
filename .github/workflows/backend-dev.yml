@@ -1,1 +1,155 @@
+name: backend DEV
 
+on:
+  push:
+    branches:
+      - dev
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: jaffleman971/maptdp-backend
+
+jobs:
+
+  secrets-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: gitleaks/gitleaks-action@v2
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: |
+          npm ci
+          npm test --if-present -- --watchAll=false
+
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: |
+          npm audit --audit-level=high || true
+
+  docker-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+
+  build-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: docker build -t local-backend:scan .
+
+      - run: docker save local-backend:scan -o image.tar
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: image.tar
+
+  trivy:
+    runs-on: ubuntu-latest
+    needs: build-scan
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+
+      - run: docker load -i image.tar
+
+      - uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: local-backend:scan
+          severity: CRITICAL,HIGH
+          exit-code: 0
+
+  build:
+    runs-on: ubuntu-latest
+
+    needs:
+      - secrets-scan
+      - test
+      - audit
+      - docker-lint
+      - trivy
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract SHA
+        id: vars
+        run: echo "sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-sha-${{ steps.vars.outputs.sha }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-latest
+
+
+  create-pr-staging:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: 'dev',
+              base: 'staging',
+              state: 'open'
+            });
+
+            if (prs.length === 0) {
+              await github.rest.pulls.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: 'Promote dev → staging',
+                head: 'dev',
+                base: 'staging',
+                body: 'Automatic promotion'
+              });
+            }
