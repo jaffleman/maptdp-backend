@@ -34,7 +34,11 @@ const PORT = process.env.PORT || 3000;
     };
     const res = {
       status: (code) => {
-        return {}
+        this.statusCode = code;
+        return this;
+      },
+      json: (data) => {
+        console.log("Response data:", data);
       }
     };
     await tdpController.search(req, res);
