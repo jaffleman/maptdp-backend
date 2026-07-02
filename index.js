@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 3000;
       ]
     };
     const res = {
-      theStatusCode,
+      theStatusCode: 0,
       statusCode: (code) => { this.theStatusCode = code; return this; },
       json: (data) => {
         console.log("Response data:", data);
