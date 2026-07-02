@@ -33,13 +33,14 @@ const PORT = process.env.PORT || 3000;
       ]
     };
     const res = {
-      statusCode: 0,
+      theStatusCode,
+      statusCode: (code) => { this.theStatusCode = code; return this; },
       json: (data) => {
         console.log("Response data:", data);
       }
     };
     await tdpController.search(req, res);
-    res.statusCode === 200 ? console.log("TDP search successful") : console.log("TDP search failed with status code:", res.statusCode);
+    res.theStatusCode === 200 ? console.log("TDP search successful") : console.log("TDP search failed with status code:", res.theStatusCode);
 
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
