@@ -28,6 +28,7 @@ router.post(
   "/geolock/findAllMarkers&acces",
   geoController.findAllMarkersAndAcces
 );
+router.get("/geolock/healthz", geoController.test);
 
 
 module.exports = router;
