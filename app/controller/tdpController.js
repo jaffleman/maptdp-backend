@@ -274,8 +274,6 @@ const tdpController = {
 
   updateid(req, res) {
     console.log("update id")
-    res.status(200).end("Le backend repond!")
-    /*
     tdp.find({}, function (err, arr) {
       if (err) {
         res.status(500).end(err);
@@ -303,7 +301,6 @@ const tdpController = {
         else res.status(200).json({ status: "nothing to update" });
       }
     });
-    */
   },
   
   test(req, res) {

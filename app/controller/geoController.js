@@ -220,6 +220,10 @@ const geoControler = {
       console.log('longitude: '+longitude+', latitude: '+latitude)
       refresh= await mainSearchMarkerAcces({longitude, latitude, longDelta:200, latDelta:200})}
     res.json({isSuccesfull:true, refresh});},
+    
+  test(req, res) {
+    res.status(200).end("maptdp-backend online.")
+  },
 };
 
 module.exports = geoControler;
