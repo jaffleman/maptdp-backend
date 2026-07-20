@@ -1,7 +1,7 @@
-const tdps = require("../models/tdpModel");
-const repartiteurs = require("../models/repModel");
-const reglettes = require('../models/regModel')
-const options = require('../models/optModel');
+const tdps = require("../models/tdp/tdpModel");
+const repartiteurs = require("../models/tdp/repModel");
+const reglettes = require('../models/tdp/regModel')
+const options = require('../models/tdp/optModel');
 const { request } = require("express");
 
 // la premiere chose a faire c'est de definir les relations entre tables pour que les jointures fonctionnes
