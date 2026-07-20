@@ -1,6 +1,7 @@
 const express = require("express");
 
 const tdpController = require("./controller/tdpController");
+const geoController = require("./controller/geoController");
 
 const router = express.Router();
 
