@@ -1,7 +1,11 @@
 require("dotenv").config();
 
 const express = require("express");
-const sequelize = require("./app/sequelize");
+
+const tdpbddConnect = require("./app/tdpSeq");
+const geobddConnect = require("./app/geoSeq");
+
+
 const router = require("./app/router");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -13,12 +17,21 @@ const PORT = process.env.PORT || 3000;
 
 (async function () {
   try {
+
+    console.log("Try to connect the Géolock database.\nPlease wait...");
+    console.log("I hope we can found it!");
+    await geobddConnect.authenticate();
+    console.log(
+      "Connection has been established successfully to Géolock:",
+      geobddConnect.options.host
+    );
+
     console.log("Try to connect the database.\nPlease wait...");
     console.log("I hope we can found it!");
-    await sequelize.authenticate();
+    await tdpbddConnect.authenticate();
     console.log(
-      "Connection has been established successfully:",
-      sequelize.options.host
+      "Connection has been established successfully to MapTDP:",
+      tdpbddConnect.options.host
     );
     const req = {
       body: [
