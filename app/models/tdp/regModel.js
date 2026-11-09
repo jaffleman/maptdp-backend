@@ -1,5 +1,5 @@
 const { Sequelize } = require("sequelize");
-const sequelize = require("../sequelize");
+const sequelize = require("../../tdpSeq");
 
 const regSchema = {
   id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },

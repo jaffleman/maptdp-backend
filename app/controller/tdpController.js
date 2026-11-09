@@ -1,7 +1,7 @@
-const tdps = require("../models/tdpModel");
-const repartiteurs = require("../models/repModel");
-const reglettes = require('../models/regModel')
-const options = require('../models/optModel');
+const tdps = require("../models/tdp/tdpModel");
+const repartiteurs = require("../models/tdp/repModel");
+const reglettes = require('../models/tdp/regModel')
+const options = require('../models/tdp/optModel');
 const { request } = require("express");
 
 // la premiere chose a faire c'est de definir les relations entre tables pour que les jointures fonctionnes
@@ -274,8 +274,6 @@ const tdpController = {
 
   updateid(req, res) {
     console.log("update id")
-    res.status(200).end("Le backend repond!")
-    /*
     tdp.find({}, function (err, arr) {
       if (err) {
         res.status(500).end(err);
@@ -303,7 +301,6 @@ const tdpController = {
         else res.status(200).json({ status: "nothing to update" });
       }
     });
-    */
   },
   
   test(req, res) {
